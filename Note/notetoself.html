@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Note to Self</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="notetoself.css">
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="noteJquery.js"></script>
+</head>
+
+<body>
+    <form>
+        <label for="note_color">選擇便利貼顏色: </label>
+        <select id="note_color">
+            <option value="LightGoldenRodYellow">黃色</option>
+            <!-- #FAFAD2 -->
+            <option value="PaleGreen">綠色</option>
+            <!-- #98FB98 -->
+            <option value="LightPink">粉紅</option>
+            <!-- #FFB6C1 -->
+            <option value="LightBlue">藍色</option>
+            <!-- #ADD8E6 -->
+        </select>
+        <label for="note_text">內容:</label>
+        <input type="text" id="note_text">
+        <input type="button" id="add_button" value="新增便利貼">
+        <!--
+		<input type="button" id="clear_button" value="Clear all Sticky Notes">
+-->
+    </form>
+    <ul id="stickies">
+        <li id=""><span></span></li>
+
+    </ul>
+</body>
+
+</html>
