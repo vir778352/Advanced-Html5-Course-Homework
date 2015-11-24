@@ -1,13 +1,20 @@
 $(function() {
-    for (var key in localStorage) {
-        if (key.substr(0, 7) === "sticky_") {
-            var appendTagForStickies = "<li id=\"" + key + "\" style=\"background-color:" + JSON.parse(localStorage[key]).color + "\">";
-            appendTagForStickies += "<span class=\"sticky\">" + JSON.parse(localStorage[key]).value + "</span></li>";
-            $('#stickies').append(appendTagForStickies);
-            $('#stickies').children().click(deleteSticky);
-        }
-    }
 
+    for (var key in localStorage) {
+        if (key === "stickiesSort") {
+            var stickiesSortArray = localStorage[key].split(",");
+            for (var i = 1; i < stickiesSortArray.length; i++) {
+                console.log(stickiesSortArray[i]);
+                if (stickiesSortArray[i].substr(0, 7) === "sticky_") {
+                    var appendTagForStickies = "<li id=\"" + stickiesSortArray[i] + "\" style=\"background-color:" + JSON.parse(localStorage[stickiesSortArray[i]]).color + "\">";
+                    appendTagForStickies += "<span class=\"sticky\">" + JSON.parse(localStorage[stickiesSortArray[i]]).value + "</span></li>";
+                    $('#stickies').append(appendTagForStickies);
+                    $('#stickies').children().click(deleteSticky);
+                }
+            }
+        }
+
+    }
     $('#add_button').click(function() {
         //alert($("#note_color").find(":selected").val());
         var currentDate = new Date();
@@ -25,6 +32,16 @@ $(function() {
         $('#stickies').children().click(deleteSticky);
 
     });
+
+    $("#stickies").sortable({
+        update: function() {
+            var stickiesSort = $(this).sortable('toArray').toString();
+            console.log(stickiesSort);
+            localStorage.setItem("stickiesSort", stickiesSort);
+            console.log(stickiesSort.split(",")[1] + "," + stickiesSort.split(",").length);
+        }
+    });
+    $("#stickies").disableSelection();
 });
 
 function getStickiesArray() {
