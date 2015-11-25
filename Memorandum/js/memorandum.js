@@ -28,11 +28,21 @@ $(function() {
 
     $('#clearFolderButton').click(clearFolder);
 
+
+    $("#itemsFolder").sortable({
+        update: function() {
+            alert("updateSort");
+            var itemsFolderSort = $(this).sortable('toArray').toString() + ",";
+            localStorage.setItem("itemsFolderSort", itemsFolderSort);
+            //console.log(itemsFolderSort.split(",")[1] + "," + itemsFolderSort.split(",").length);
+        }
+    });
+
 });
 
 function init() {
     localStorage.setItem("mouFolderDefault", JSON.stringify({
-        "value": "default",
+        "value": "未分類",
         "count": 0
     }));
 }
@@ -119,24 +129,46 @@ function saveFolder() {
     if ($('#folderText').val() !== "") {
         //localStorage.setItem(key, $('#folderText').val());
         localStorage.setItem(key, JSON.stringify(folderValue));
+        //sortArray
+        var keyOfSort = "itemsFolderSort";
+        if (localStorage[keyOfSort]) {
+            var valueOfSort = localStorage[keyOfSort] + key + ",";
+            localStorage.setItem(keyOfSort, valueOfSort);
+        }
     }
     $('#folderText').val("");
     addFolderDOM();
 }
 
 function addFolderDOM() {
-    //init();
+
     $('#itemsFolder').children().remove();
     var defaultKey = "mouFolderDefault";
-    //console.log(localStorage[defaultKey]);
-    $('#itemsFolder').append("<li id=\"mouFolderDefault\"><a href=\"#sortPage\">未分類</a>" + "<span class=\"ui-li-count\">" + JSON.parse(localStorage[defaultKey]).count + "</span></li>");
+    var isItemsFolderSort = false;
+
     for (var key in localStorage) {
-        if (key.substr(0, 10) === "mouFolder_") {
+        if (key.substr(0, 9) === "mouFolder") {
             var appendContext = "<li id=\"" + key + "\">" + "<a href=\"#sortPage\">" + JSON.parse(localStorage[key]).value + "</a>";
             appendContext += "<span class=\"ui-li-count\">" + JSON.parse(localStorage[key]).count + "</span></li>";
             $('#itemsFolder').append(appendContext);
         }
+        if (key === "itemsFolderSort") {
+            isItemsFolderSort = true;
+        }
     }
+
+    if (isItemsFolderSort) {
+        var key1 = 'itemsFolderSort';
+        var itemsFolderSortArray = localStorage[key1].split(",");
+        $('#itemsFolder').children().remove();
+        for (var i = 0; i < itemsFolderSortArray.length - 1; i++) {
+            console.log(itemsFolderSortArray[i]);
+            var appendContext01 = "<li id=\"" + itemsFolderSortArray[i] + "\">" + "<a href=\"#sortPage\">" + JSON.parse(localStorage[itemsFolderSortArray[i]]).value + "</a>";
+            appendContext01 += "<span class=\"ui-li-count\">" + JSON.parse(localStorage[itemsFolderSortArray[i]]).count + "</span></li>";
+            $('#itemsFolder').append(appendContext01);
+        }
+    }
+
     $('#itemsFolder').children().click(sortPageDOM);
     $('#itemsFolder').listview().listview('refresh');
 
@@ -147,9 +179,8 @@ function addFolderDOM() {
 function addSelectDom(id) {
     $('#' + id).children().remove();
     $('#' + id).append("<option>選擇放入的資料夾</option>");
-    $('#' + id).append("<option value=\"mouFolderDefault\" selected>未分類</option>");
     for (var key1 in localStorage) {
-        if (key1.substr(0, 10) === "mouFolder_") {
+        if (key1.substr(0, 9) === "mouFolder") {
             var appendSelectFolder01 = "<option value=\"" + key1 + "\">" + JSON.parse(localStorage[key1]).value + "</option>";
             $('#' + id).append(appendSelectFolder01);
         }
@@ -157,11 +188,7 @@ function addSelectDom(id) {
 }
 
 function sortPageDOM() {
-    if (this.id === "mouFolderDefault")
-        $('#sortPage h1').text("[資料夾]未分類");
-    else
-        $('#sortPage h1').text("[資料夾]" + JSON.parse(localStorage[this.id]).value);
-
+    $('#sortPage h1').text("[資料夾]" + JSON.parse(localStorage[this.id]).value);
     $('#sortItems').children().remove();
     for (var key in localStorage) {
         if (key.substr(0, 4) === "mou_" && this.id === JSON.parse(localStorage[key]).folderKeyId) {
@@ -208,6 +235,14 @@ function clearFolder() {
         alert("此資料夾不可刪除!");
     } else {
         if (confirm("是否刪除此資料夾及內部所有資料")) {
+            //sortArray
+            var keyOfSort = "itemsFolderSort";
+            if (localStorage[keyOfSort]) {
+                //var valueOfSort = localStorage[keyOfSort] + "," + key;
+                var valueOfSort = localStorage[keyOfSort].replace((keyId + ','), "");
+                localStorage.setItem(keyOfSort, valueOfSort);
+            }
+
             for (var key in localStorage) {
                 if (key.substr(0, 4) === "mou_" && keyId === JSON.parse(localStorage[key]).folderKeyId) {
                     localStorage.removeItem(key);
