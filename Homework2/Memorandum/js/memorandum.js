@@ -73,10 +73,12 @@ function save() {
 
 function modifyPage() {
     var folderId = JSON.parse(localStorage[this.id]).folderKeyId;
-    if (folderId === "mouFolderDefault") {
-        $('#modifyPage h2').text("/ " + "未分類" + " / ..");
-    } else {
-        $('#modifyPage h2').text("/ " + JSON.parse(localStorage[folderId]).value + " / ..");
+    if (folderId.substr(0, 4) === "mouF") {
+        if (folderId === "mouFolderDefault") {
+            $('#modifyPage h2').text("/ " + "未分類" + " / ..");
+        } else {
+            $('#modifyPage h2').text("/ " + JSON.parse(localStorage[folderId]).value + " / ..");
+        }
     }
 
     $('#currentTime01').text(this.id.slice(4));
@@ -182,9 +184,11 @@ function addSelectDom(id) {
     for (var key1 in localStorage) {
         if (key1.substr(0, 9) === "mouFolder") {
             var appendSelectFolder01 = "<option value=\"" + key1 + "\">" + JSON.parse(localStorage[key1]).value + "</option>";
+
             $('#' + id).append(appendSelectFolder01);
         }
     }
+    $("select option[value='mouFolderDefault']").attr("selected", "selected");
 }
 
 function sortPageDOM() {
